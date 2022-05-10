@@ -58,7 +58,10 @@ def _rule_sources(ctx):
     srcs = []
     if hasattr(ctx.rule.attr, "srcs"):
         for src in ctx.rule.attr.srcs:
-            srcs += [src for src in src.files.to_list() if src.is_source]
+            if ".lib" in src.path or ".a" in src.path or ".so" in src.path:
+                continue
+            else:
+                srcs += [src for src in src.files.to_list() if src.is_source]
     return srcs
 
 def _toolchain_flags(ctx):
