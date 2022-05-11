@@ -56,12 +56,15 @@ def _run_tidy(ctx, exe, flags, compilation_context, infile, discriminator):
 
 def _rule_sources(ctx):
     srcs = []
-    file_extentions = [".c", ".cc", ".cpp", ".cxx", ".c++", ".C", ".h", ".hh", ".hpp", ".hxx", ".inc", ".inl", ".H"]
+    print("input source: ", ctx.rule.attr.srcs)
+    file_extentions = ["c", "cc", "cpp", "cxx", "c++", "C", "h", "hh", "hpp", "hxx", "inc", "inl", "H"]
     if hasattr(ctx.rule.attr, "srcs"):
         for src in ctx.rule.attr.srcs:
-            for extention in file_extentions:
-                if extention in src.files.to_list():
-                    srcs += [src for src in src.files.to_list() if src.is_source]
+            for path in src.files.to_list():
+                for file_extension in file_extentions:
+                    if file_extension == path.extension:
+                        print("path:", path)
+                        srcs += [src for src in src.files.to_list() if src.is_source]
     return srcs
 
 def _toolchain_flags(ctx):
@@ -100,7 +103,7 @@ def _clang_tidy_aspect_impl(target, ctx):
     compilation_context = target[CcInfo].compilation_context
     srcs = _rule_sources(ctx)
     outputs = [_run_tidy(ctx, exe, safe_flags, compilation_context, src, target.label.name) for src in srcs]
-
+    
     return [
         OutputGroupInfo(report = depset(direct = outputs)),
     ]
