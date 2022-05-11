@@ -56,15 +56,12 @@ def _run_tidy(ctx, exe, flags, compilation_context, infile, discriminator):
 
 def _rule_sources(ctx):
     srcs = []
-    print("input source: ", ctx.rule.attr.srcs)
-    file_extentions = ["c", "cc", "cpp", "cxx", "c++", "C", "h", "hh", "hpp", "hxx", "inc", "inl", "H"]
+    file_extensions = ["c", "cc", "cpp", "cxx", "c++", "C", "h", "hh", "hpp", "hxx", "inc", "inl", "H"]
     if hasattr(ctx.rule.attr, "srcs"):
         for src in ctx.rule.attr.srcs:
             for path in src.files.to_list():
-                for file_extension in file_extentions:
-                    if file_extension == path.extension:
-                        print("path:", path)
-                        srcs += [src for src in src.files.to_list() if src.is_source]
+                if path.extension in file_extensions:
+                    srcs += [src for src in src.files.to_list() if src.is_source]
     return srcs
 
 def _toolchain_flags(ctx):
