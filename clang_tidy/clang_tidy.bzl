@@ -59,9 +59,7 @@ def _rule_sources(ctx):
     file_extensions = ["c", "cc", "cpp", "cxx", "c++", "C", "h", "hh", "hpp", "hxx", "inc", "inl", "H"]
     if hasattr(ctx.rule.attr, "srcs"):
         for src in ctx.rule.attr.srcs:
-            for path in src.files.to_list():
-                if path.extension in file_extensions and path.is_source:
-                    srcs += [path] 
+            srcs += [src for src in src.files.to_list() if src.is_source and src.extension in file_extensions]
     return srcs
 
 def _toolchain_flags(ctx):
